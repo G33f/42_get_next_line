@@ -1,9 +1,23 @@
-#include "get_next_line.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wpoudre <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/10/10 15:54:42 by wpoudre           #+#    #+#             */
+/*   Updated: 2019/10/10 15:54:48 by wpoudre          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-int line_copy(char **line, char *content, char c)
+#include "get_next_line.h"
+#include <stdio.h>
+#include <fcntl.h>
+
+int			line_copy(char **line, char *content, char c)
 {
-	int i;
-	char *tmp;
+	int		i;
+	char	*tmp;
 
 	i = 0;
 	tmp = *line;
@@ -14,9 +28,9 @@ int line_copy(char **line, char *content, char c)
 	return (i);
 }
 
-t_list *get_live(int fd, t_list **hist)
+t_list		*get_live(int fd, t_list **hist)
 {
-	t_list *tmp;
+	t_list	*tmp;
 
 	if (!hist)
 		return (NULL);
@@ -32,11 +46,11 @@ t_list *get_live(int fd, t_list **hist)
 	return (tmp);
 }
 
-int my_read(const int fd, char **content)
+int			my_read(const int fd, char **content)
 {
-	int read_result;
-	char *tmp;
-	char buf[BUFF_SIZE + 1];
+	int		read_result;
+	char	*tmp;
+	char	buf[BUFF_SIZE + 1];
 
 	while ((read_result = read(fd, buf, BUFF_SIZE)))
 	{
@@ -51,13 +65,13 @@ int my_read(const int fd, char **content)
 	return (read_result);
 }
 
-int get_next_line(const int fd, char **line)
+int			get_next_line(const int fd, char **line)
 {
-	char buf[BUFF_SIZE + 1];
-	size_t read_result;
-	static t_list *hist;
-	t_list *live;
-	char *tmp;
+	char			buf[BUFF_SIZE + 1];
+	size_t			read_result;
+	static t_list	*hist;
+	t_list			*live;
+	char			*tmp;
 
 	if (fd < 0 || !line || (read(fd, buf, 0)) < 0 ||
 		(!(live = get_live(fd, &hist))))
@@ -77,4 +91,20 @@ int get_next_line(const int fd, char **line)
 	else
 		tmp[0] = '\0';
 	return (1);
+}
+
+int main()
+{
+	int fd;
+	char *line;
+
+	line = NULL;
+	fd = open("get_next_line.h", O_RDONLY);
+	while (get_next_line(fd, &line))
+	{
+		printf("%s\n", line);
+//		free(line);
+	}
+	printf("%s\n", line);
+	close(fd);
 }
